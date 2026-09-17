@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.orders.name }}
+  namespace: {{ .Values.global.namespace }}
+spec:
+  replicas: {{ .Values.orders.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.orders.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.orders.name }}
+    spec:
+      serviceAccountName: {{ .Values.orders.name }}
+      containers:
+        - name: {{ .Values.orders.name }}
+          image: {{ .Values.orders.image | quote }}
+          imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+
+          ports:
+            - name: http
+              containerPort: {{ .Values.orders.port }}
+
+          env:
+            - name: API_KEY
+              value: "baseline-demo-key"
+
+            - name: DB_HOST
+              value: {{ .Values.postgresql.name | quote }}
+
+            - name: DB_PORT
+              value: {{ .Values.postgresql.port | quote }}
+
+            - name: DB_NAME
+              value: {{ .Values.postgresql.database | quote }}
+
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.postgresql.name }}
+                  key: username
+
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets.postgresql.name }}
+                  key: password
+
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http

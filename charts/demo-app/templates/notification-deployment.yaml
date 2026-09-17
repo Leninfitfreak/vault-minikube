@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.notification.name }}
+  namespace: {{ .Values.global.namespace }}
+spec:
+  replicas: {{ .Values.notification.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.notification.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.notification.name }}
+    spec:
+      serviceAccountName: {{ .Values.notification.name }}
+      containers:
+        - name: {{ .Values.notification.name }}
+          image: {{ .Values.notification.image | quote }}
+          imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.notification.port }}
+          env:
+            - name: NOTIFICATION_API_KEY
+              value: "baseline-notification-key"
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http

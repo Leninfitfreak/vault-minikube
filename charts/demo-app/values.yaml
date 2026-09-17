@@ -1,0 +1,32 @@
+global:
+  namespace: demo
+  imagePullPolicy: IfNotPresent
+
+frontend:
+  name: frontend-service
+  image: frontend-service:v1
+  replicas: 1
+  port: 8080
+
+orders:
+  name: orders-service
+  image: orders-service:v1
+  replicas: 1
+  port: 8080
+
+notification:
+  name: notification-service
+  image: notification-service:v1
+  replicas: 1
+  port: 8080
+
+postgresql:
+  name: postgresql
+  image: postgres:16-alpine
+  database: appdb
+  port: 5432
+  storage: 1Gi
+
+secrets:
+  postgresql:
+    name: postgresql-credentials
