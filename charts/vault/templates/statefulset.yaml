@@ -1,0 +1,85 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Values.vault.name }}
+  namespace: {{ .Values.global.namespace }}
+spec:
+  serviceName: {{ .Values.vault.name }}-internal
+  replicas: {{ .Values.vault.replicas }}
+
+  selector:
+    matchLabels:
+      app: {{ .Values.vault.name }}
+
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.vault.name }}
+
+    spec:
+      serviceAccountName: {{ .Values.vault.name }}
+
+      containers:
+        - name: vault
+          image: {{ .Values.vault.image | quote }}
+          imagePullPolicy: IfNotPresent
+
+          command:
+            - /bin/sh
+            - -ec
+            - |
+              sed \
+                -e "s/VAULT_NODE_ID/$POD_NAME/g" \
+                -e "s/VAULT_POD_NAME/$POD_NAME/g" \
+                /vault/config-template/vault.hcl > /tmp/vault.hcl
+
+              exec vault server -config=/tmp/vault.hcl
+
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+
+          ports:
+            - name: api
+              containerPort: {{ .Values.vault.service.apiPort }}
+
+            - name: cluster
+              containerPort: {{ .Values.vault.service.clusterPort }}
+
+          volumeMounts:
+            - name: config
+              mountPath: /vault/config-template
+              readOnly: true
+
+            - name: data
+              mountPath: {{ .Values.vault.raft.path }}
+
+          readinessProbe:
+            tcpSocket:
+              port: api
+            initialDelaySeconds: 5
+            periodSeconds: 5
+
+          livenessProbe:
+            tcpSocket:
+              port: api
+            initialDelaySeconds: 15
+            periodSeconds: 10
+
+      volumes:
+        - name: config
+          configMap:
+            name: {{ .Values.vault.name }}-config
+
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: {{ .Values.vault.storage.storageClassName }}
+        resources:
+          requests:
+            storage: {{ .Values.vault.storage.size }}

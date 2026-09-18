@@ -1,0 +1,6 @@
+apiVersion: v2
+name: vault
+description: Vault HA Raft deployment for Kubernetes demo
+type: application
+version: 0.1.0
+appVersion: "1.20"

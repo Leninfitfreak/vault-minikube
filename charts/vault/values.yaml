@@ -1,0 +1,18 @@
+global:
+  namespace: vault
+
+vault:
+  name: vault
+  image: hashicorp/vault:1.20
+  replicas: 3
+
+  service:
+    apiPort: 8200
+    clusterPort: 8201
+
+  storage:
+    size: 1Gi
+    storageClassName: standard
+
+  raft:
+    path: /vault/data
