@@ -25,7 +25,10 @@ spec:
 
           env:
             - name: API_KEY
-              value: "baseline-demo-key"
+              valueFrom:
+                secretKeyRef:
+                  name: orders-service-vault-credentials
+                  key: API_KEY
 
             - name: DB_HOST
               value: {{ .Values.postgresql.name | quote }}
