@@ -43,12 +43,13 @@ resource "vault_pki_secret_backend_intermediate_set_signed" "intermediate" {
 }
 
 resource "vault_pki_secret_backend_role" "orders_service" {
-  backend          = vault_mount.pki_int.path
-  name             = "orders-service"
-  ttl              = 3600
-  max_ttl          = 86400
-  allow_localhost  = false
-  allow_subdomains = true
+  backend            = vault_mount.pki_int.path
+  name               = "orders-service"
+  ttl                = 3600
+  max_ttl            = 86400
+  allow_localhost    = false
+  allow_bare_domains = true
+  allow_subdomains   = false
   allowed_domains = [
     "orders-service.demo.svc.cluster.local",
     "orders-service.demo.svc"
