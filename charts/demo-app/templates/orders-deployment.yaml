@@ -42,13 +42,13 @@ spec:
             - name: DB_USERNAME
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.secrets.postgresql.name }}
+                  name: orders-service-db
                   key: username
 
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.secrets.postgresql.name }}
+                  name: orders-service-db
                   key: password
 
           readinessProbe:

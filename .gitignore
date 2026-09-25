@@ -1,0 +1,20 @@
+.env
+.env
+project_snapshot.txt
+
+# Terraform local/runtime files
+**/.terraform/*
+*.tfstate
+*.tfstate.*
+crash.log
+crash.*.log
+
+.env
+project_snapshot.txt
+project_snapshot.py
+
+**/.terraform/*
+*.tfstate
+*.tfstate.*
+crash.log
+crash.*.log
