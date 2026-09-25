@@ -23,6 +23,11 @@ spec:
             - name: http
               containerPort: {{ .Values.orders.port }}
 
+          volumeMounts:
+            - name: orders-service-tls
+              mountPath: /etc/tls
+              readOnly: true
+
           env:
             - name: API_KEY
               valueFrom:
@@ -60,3 +65,8 @@ spec:
             httpGet:
               path: /health
               port: http
+
+      volumes:
+        - name: orders-service-tls
+          secret:
+            secretName: orders-service-tls
