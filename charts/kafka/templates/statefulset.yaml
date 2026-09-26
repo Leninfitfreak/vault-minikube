@@ -4,6 +4,7 @@ metadata:
   name: {{ .Values.kafka.name }}
   namespace: {{ .Values.global.namespace }}
 spec:
+  podManagementPolicy: Parallel
   serviceName: kafka-headless
   replicas: {{ .Values.kafka.replicas }}
 
@@ -17,6 +18,7 @@ spec:
         app: {{ .Values.kafka.name }}
 
     spec:
+      enableServiceLinks: false
       containers:
         - name: kafka
           image: "{{ .Values.kafka.image.repository }}:{{ .Values.kafka.image.tag }}"
