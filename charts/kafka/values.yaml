@@ -1,0 +1,36 @@
+global:
+  namespace: kafka
+
+kafka:
+  name: kafka
+
+  clusterId: "SzVkHWKGS5CDsQ2gq1Ixow"
+
+  image:
+    repository: confluentinc/cp-kafka
+    tag: "8.1.0"
+    pullPolicy: IfNotPresent
+
+  replicas: 3
+
+  ports:
+    client: 9092
+    controller: 9093
+
+  storage:
+    size: 2Gi
+
+  resources:
+    requests:
+      cpu: 250m
+      memory: 512Mi
+    limits:
+      cpu: "1"
+      memory: 1Gi
+
+  replication:
+    defaultReplicationFactor: 3
+    minInSyncReplicas: 2
+    offsetsTopicReplicationFactor: 3
+    transactionStateLogReplicationFactor: 3
+    transactionStateLogMinIsr: 2
