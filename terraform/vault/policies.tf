@@ -39,3 +39,13 @@ path "pki_int/issue/notification-service" {
 }
 EOT
 }
+
+resource "vault_policy" "prometheus_metrics" {
+  name = "prometheus-metrics"
+
+  policy = <<EOT
+path "sys/metrics" {
+  capabilities = ["read", "list"]
+}
+EOT
+}

@@ -24,3 +24,12 @@ resource "vault_kubernetes_auth_backend_role" "notification_service" {
   token_policies                   = [vault_policy.notification_service.name]
   token_ttl                        = 3600
 }
+
+resource "vault_kubernetes_auth_backend_role" "prometheus" {
+  backend                          = vault_auth_backend.kubernetes.path
+  role_name                        = "prometheus"
+  bound_service_account_names      = ["prometheus"]
+  bound_service_account_namespaces = ["monitoring"]
+  token_policies                   = [vault_policy.prometheus_metrics.name]
+  token_ttl                        = 3600
+}
