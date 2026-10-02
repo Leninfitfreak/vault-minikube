@@ -2,5 +2,9 @@ global:
   namespace: monitoring
 
 prometheus:
+  image: prom/prometheus:v3.5.0
   serviceAccount:
     name: prometheus
+
+vaultAgent:
+  image: hashicorp/vault:1.20

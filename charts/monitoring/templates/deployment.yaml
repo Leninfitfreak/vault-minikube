@@ -1,0 +1,71 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prometheus
+  namespace: {{ .Values.global.namespace }}
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: prometheus
+
+  template:
+    metadata:
+      labels:
+        app: prometheus
+
+    spec:
+      serviceAccountName: {{ .Values.prometheus.serviceAccount.name }}
+
+      containers:
+        - name: vault-agent
+          image: {{ .Values.vaultAgent.image }}
+          args:
+            - agent
+            - -config=/vault-agent/config/vault-agent.hcl
+
+          volumeMounts:
+            - name: vault-agent-config
+              mountPath: /vault-agent/config
+              readOnly: true
+
+            - name: vault-token
+              mountPath: /vault-token
+
+        - name: prometheus
+          image: {{ .Values.prometheus.image }}
+          args:
+            - --config.file=/etc/prometheus/prometheus.yml
+            - --storage.tsdb.path=/prometheus
+
+          ports:
+            - name: http
+              containerPort: 9090
+
+          volumeMounts:
+            - name: prometheus-config
+              mountPath: /etc/prometheus
+              readOnly: true
+
+            - name: vault-token
+              mountPath: /vault-token
+              readOnly: true
+
+            - name: prometheus-data
+              mountPath: /prometheus
+
+      volumes:
+        - name: vault-agent-config
+          configMap:
+            name: vault-agent-config
+
+        - name: prometheus-config
+          configMap:
+            name: prometheus-config
+
+        - name: vault-token
+          emptyDir: {}
+
+        - name: prometheus-data
+          emptyDir: {}
