@@ -1,0 +1,23 @@
+{
+  "providers": [
+    {
+      "namespace": "hashicorp",
+      "type": "vault",
+      "version": "5.12.0",
+      "platforms": [
+        {
+          "os": "windows",
+          "arch": "amd64"
+        },
+        {
+          "os": "linux",
+          "arch": "amd64"
+        }
+      ],
+      "source": {
+        "kind": "hashicorp-releases",
+        "base_url": "https://releases.hashicorp.com"
+      }
+    }
+  ]
+}

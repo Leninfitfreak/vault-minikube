@@ -1,0 +1,11 @@
+# Terraform provider registry is redirected to the approved internal Nexus repository.
+# Authentication is supplied separately through:
+# TF_TOKEN_registry_terraform_io
+#
+# Never store the Nexus bearer token in this file or Git.
+
+host "registry.terraform.io" {
+  services = {
+    "providers.v1" = "http://127.0.0.1:8081/repository/terraform-hosted/v1/providers/"
+  }
+}

@@ -9,6 +9,10 @@ project_snapshot.txt
 crash.log
 crash.*.log
 
+# Local air-gap POC transfer bundles and generated credential-bearing config
+artifacts/
+terraform/cli-config/*.local
+
 .env
 project_snapshot.txt
 project_snapshot.py
