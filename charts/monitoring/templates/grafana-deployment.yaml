@@ -1,4 +1,4 @@
-apiVersion: apps/v1
+﻿apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: grafana
@@ -25,19 +25,15 @@ spec:
               containerPort: 3000
 
           volumeMounts:
-            - name: grafana-datasource
-              mountPath: /etc/grafana/provisioning/datasources
-              readOnly: true
 
             - name: grafana-data
               mountPath: /var/lib/grafana
 
       volumes:
-        - name: grafana-datasource
-          configMap:
-            name: grafana-datasource
 
         - name: grafana-data
           persistentVolumeClaim:
             claimName: grafana-data
+
+
 
