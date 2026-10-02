@@ -1,0 +1,14 @@
+{{- if .Values.nexus.persistence.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nexus-data
+  namespace: {{ .Values.global.namespace }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: {{ .Values.nexus.persistence.storageClassName }}
+  resources:
+    requests:
+      storage: {{ .Values.nexus.persistence.size }}
+{{- end }}
