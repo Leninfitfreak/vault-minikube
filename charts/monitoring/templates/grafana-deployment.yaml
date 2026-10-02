@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grafana
+  namespace: {{ .Values.global.namespace }}
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: grafana
+
+  template:
+    metadata:
+      labels:
+        app: grafana
+
+    spec:
+      containers:
+        - name: grafana
+          image: {{ .Values.grafana.image }}
+
+          ports:
+            - name: http
+              containerPort: 3000
+
+          volumeMounts:
+            - name: grafana-datasource
+              mountPath: /etc/grafana/provisioning/datasources
+              readOnly: true
+
+            - name: grafana-data
+              mountPath: /var/lib/grafana
+
+      volumes:
+        - name: grafana-datasource
+          configMap:
+            name: grafana-datasource
+
+        - name: grafana-data
+          emptyDir: {}
