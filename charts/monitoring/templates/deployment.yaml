@@ -18,6 +18,9 @@ spec:
     spec:
       serviceAccountName: {{ .Values.prometheus.serviceAccount.name }}
 
+      securityContext:
+        fsGroup: 1000
+
       containers:
         - name: vault-agent
           image: {{ .Values.vaultAgent.image }}
@@ -69,3 +72,4 @@ spec:
 
         - name: prometheus-data
           emptyDir: {}
+
