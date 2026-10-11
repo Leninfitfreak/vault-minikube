@@ -10,4 +10,10 @@ vaultAgent:
   image: hashicorp/vault:1.20
 
 grafana:
-  image: grafana/grafana:12.2.0
+  image: grafana/grafana-enterprise:12.2.0
+  jwt:
+    enabled: true
+    issuer: https://keycloak-jwt-poc:8443/realms/grafana-jwt-poc
+    audience: grafana-platform
+    client: jenkins-grafana-platform
+    caConfigMap: keycloak-jwks-ca

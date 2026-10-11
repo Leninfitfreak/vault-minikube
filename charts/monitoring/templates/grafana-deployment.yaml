@@ -19,6 +19,41 @@ spec:
       containers:
         - name: grafana
           image: {{ .Values.grafana.image }}
+          {{- if .Values.grafana.jwt.enabled }}
+          env:
+            - name: GF_AUTH_JWT_ENABLED
+              value: "true"
+            - name: GF_AUTH_JWT_HEADER_NAME
+              value: X-JWT-Assertion
+            - name: GF_AUTH_JWT_USERNAME_CLAIM
+              value: preferred_username
+            - name: GF_AUTH_JWT_EMAIL_CLAIM
+              value: email
+            - name: GF_AUTH_JWT_AUTO_SIGN_UP
+              value: "true"
+            - name: GF_AUTH_JWT_JWK_SET_URL
+              value: {{ printf "%s/protocol/openid-connect/certs" .Values.grafana.jwt.issuer | quote }}
+            - name: GF_AUTH_JWT_TLS_CLIENT_CA
+              value: /etc/keycloak-trust/ca.crt
+            - name: GF_AUTH_JWT_TLS_SKIP_VERIFY_INSECURE
+              value: "false"
+            - name: GF_AUTH_JWT_CACHE_TTL
+              value: 1m
+            - name: GF_AUTH_JWT_EXPECT_CLAIMS
+              value: {{ dict "iss" .Values.grafana.jwt.issuer "aud" .Values.grafana.jwt.audience "azp" .Values.grafana.jwt.client "grafana_role" "Admin" | toJson | quote }}
+            - name: GF_AUTH_JWT_ROLE_ATTRIBUTE_PATH
+              value: grafana_role
+            - name: GF_AUTH_JWT_ROLE_ATTRIBUTE_STRICT
+              value: "true"
+            - name: GF_AUTH_JWT_ALLOW_ASSIGN_GRAFANA_ADMIN
+              value: "false"
+            - name: GF_AUTH_JWT_SKIP_ORG_ROLE_SYNC
+              value: "false"
+            - name: GF_AUTH_JWT_URL_LOGIN
+              value: "false"
+            - name: GF_AUTH_ANONYMOUS_ENABLED
+              value: "false"
+          {{- end }}
 
           ports:
             - name: http
@@ -28,12 +63,22 @@ spec:
 
             - name: grafana-data
               mountPath: /var/lib/grafana
+            {{- if .Values.grafana.jwt.enabled }}
+            - name: keycloak-jwks-ca
+              mountPath: /etc/keycloak-trust
+              readOnly: true
+            {{- end }}
 
       volumes:
 
         - name: grafana-data
           persistentVolumeClaim:
             claimName: grafana-data
+        {{- if .Values.grafana.jwt.enabled }}
+        - name: keycloak-jwks-ca
+          configMap:
+            name: {{ .Values.grafana.jwt.caConfigMap }}
+        {{- end }}
 
 
 
