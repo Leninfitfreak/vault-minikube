@@ -27,3 +27,12 @@ data:
               - vault-0.vault-internal.vault.svc.cluster.local:8200
               - vault-1.vault-internal.vault.svc.cluster.local:8200
               - vault-2.vault-internal.vault.svc.cluster.local:8200
+
+      - job_name: demo-microservices
+        metrics_path: /metrics
+        scrape_interval: 15s
+        static_configs:
+          - targets:
+              - orders-service.demo.svc.cluster.local:8080
+              - notification-service.demo.svc.cluster.local:8080
+              - frontend-service.demo.svc.cluster.local:8080
