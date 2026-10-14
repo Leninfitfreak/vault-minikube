@@ -27,4 +27,4 @@ grafana:
     hostAliases:
       - ip: "192.168.86.128"
         hostnames:
-          - "DC01.ad.lab.test"
+          - "dc01.ad.lab.test"
