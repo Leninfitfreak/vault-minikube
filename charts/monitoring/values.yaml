@@ -17,3 +17,14 @@ grafana:
     audience: grafana-platform
     client: jenkins-grafana-platform
     caConfigMap: keycloak-jwks-ca
+
+  ldap:
+    enabled: true
+    host: DC01.ad.lab.test
+    port: 636
+    caConfigMap: grafana-ldap-ca
+    caFile: ADLab-Root-CA.pem
+    hostAliases:
+      - ip: "192.168.86.128"
+        hostnames:
+          - "DC01.ad.lab.test"

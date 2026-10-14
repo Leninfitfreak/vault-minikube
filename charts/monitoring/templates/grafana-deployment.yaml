@@ -1,4 +1,5 @@
-﻿apiVersion: apps/v1
+﻿
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: grafana
@@ -16,11 +17,17 @@ spec:
         app: grafana
 
     spec:
+      {{- if .Values.grafana.ldap.enabled }}
+      hostAliases:
+        {{- toYaml .Values.grafana.ldap.hostAliases | nindent 8 }}
+      {{- end }}
+
       containers:
         - name: grafana
           image: {{ .Values.grafana.image }}
-          {{- if .Values.grafana.jwt.enabled }}
+
           env:
+            {{- if .Values.grafana.jwt.enabled }}
             - name: GF_AUTH_JWT_ENABLED
               value: "true"
             - name: GF_AUTH_JWT_HEADER_NAME
@@ -53,32 +60,62 @@ spec:
               value: "false"
             - name: GF_AUTH_ANONYMOUS_ENABLED
               value: "false"
-          {{- end }}
+            {{- end }}
 
+            {{- if .Values.grafana.ldap.enabled }}
+            - name: GF_AUTH_LDAP_ENABLED
+              value: "true"
+            - name: GF_AUTH_LDAP_CONFIG_FILE
+              value: /etc/grafana/ldap.toml
+            - name: GF_AUTH_LDAP_ALLOW_SIGN_UP
+              value: "true"
+            - name: LDAP_BIND_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: grafana-ldap-bind
+                  key: LDAP_BIND_PASSWORD
+            {{- end }}
           ports:
             - name: http
               containerPort: 3000
 
           volumeMounts:
-
             - name: grafana-data
               mountPath: /var/lib/grafana
+
             {{- if .Values.grafana.jwt.enabled }}
             - name: keycloak-jwks-ca
               mountPath: /etc/keycloak-trust
               readOnly: true
             {{- end }}
 
-      volumes:
+            {{- if .Values.grafana.ldap.enabled }}
+            - name: grafana-ldap-config
+              mountPath: /etc/grafana/ldap.toml
+              subPath: ldap.toml
+              readOnly: true
+            - name: grafana-ldap-ca
+              mountPath: /etc/grafana/ldap-certs
+              readOnly: true
+            {{- end }}
 
+      volumes:
+        {{- if .Values.grafana.ldap.enabled }}
+        - name: grafana-ldap-config
+          configMap:
+            name: grafana-ldap-config
+        - name: grafana-ldap-ca
+          configMap:
+            name: {{ .Values.grafana.ldap.caConfigMap }}
+        {{- end }}
         - name: grafana-data
           persistentVolumeClaim:
             claimName: grafana-data
+
         {{- if .Values.grafana.jwt.enabled }}
         - name: keycloak-jwks-ca
           configMap:
             name: {{ .Values.grafana.jwt.caConfigMap }}
         {{- end }}
-
 
 

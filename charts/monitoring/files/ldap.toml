@@ -1,0 +1,32 @@
+[[servers]]
+host = "DC01.ad.lab.test"
+port = 636
+use_ssl = true
+start_tls = false
+ssl_skip_verify = false
+root_ca_cert = "/etc/grafana/ldap-certs/ADLab-Root-CA.pem"
+
+bind_dn = "CN=svc-grafana-ldap,OU=Service Accounts,DC=ad,DC=lab,DC=test"
+bind_password = "$__env{LDAP_BIND_PASSWORD}"
+
+search_filter = "(sAMAccountName=%s)"
+search_base_dns = ["DC=ad,DC=lab,DC=test"]
+
+[servers.attributes]
+name = "givenName"
+surname = "sn"
+username = "sAMAccountName"
+email = "mail"
+member_of = "memberOf"
+
+[[servers.group_mappings]]
+group_dn = "CN=GG-Grafana-Platform,OU=Platform,OU=Applications,DC=ad,DC=lab,DC=test"
+org_role = "Admin"
+
+[[servers.group_mappings]]
+group_dn = "CN=GG-Grafana-Orders,OU=Orders,OU=Applications,DC=ad,DC=lab,DC=test"
+org_role = "Viewer"
+
+[[servers.group_mappings]]
+group_dn = "CN=GG-Grafana-Payments,OU=Payments,OU=Applications,DC=ad,DC=lab,DC=test"
+org_role = "Viewer"

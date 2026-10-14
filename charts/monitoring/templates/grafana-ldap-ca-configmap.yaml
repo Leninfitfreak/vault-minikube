@@ -1,0 +1,10 @@
+﻿{{- if .Values.grafana.ldap.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.grafana.ldap.caConfigMap }}
+  namespace: {{ .Values.global.namespace }}
+data:
+  {{ .Values.grafana.ldap.caFile }}: |
+{{ .Files.Get "files/ADLab-Root-CA.pem" | indent 4 }}
+{{- end }}
