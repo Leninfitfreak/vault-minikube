@@ -7,7 +7,7 @@ ssl_skip_verify = false
 root_ca_cert = "/etc/grafana/ldap-certs/ADLab-Root-CA.pem"
 
 bind_dn = "CN=svc-grafana-ldap,OU=Service Accounts,DC=ad,DC=lab,DC=test"
-bind_password = "$__env{LDAP_BIND_PASSWORD}"
+bind_password = "${LDAP_BIND_PASSWORD}"
 
 search_filter = "(sAMAccountName=%s)"
 search_base_dns = ["DC=ad,DC=lab,DC=test"]
